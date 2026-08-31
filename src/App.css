@@ -379,3 +379,235 @@ footer p {
     grid-template-columns: 1fr;
   }
 }
+.promptSection {
+  padding: 90px max(20px, calc((100% - 1180px) / 2));
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  background: #080b14;
+}
+
+.promptSectionHeader {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 38px;
+}
+
+.closeCategory {
+  padding: 10px 18px;
+  color: var(--muted);
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.closeCategory:hover {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.promptGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+
+.promptCard {
+  min-height: 250px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  background: linear-gradient(145deg, var(--surface), #0d1422);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.promptCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(124, 92, 252, 0.7);
+}
+
+.promptNumber {
+  margin-bottom: 30px;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.promptCard h3 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.promptCard p {
+  margin: 0 0 25px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.promptCard button {
+  margin-top: auto;
+  padding: 0;
+  color: #a99bff;
+  font-size: 13px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+  border: 0;
+  background: transparent;
+}
+
+.promptCard button:hover {
+  color: var(--secondary);
+}
+
+.emptyPrompts {
+  padding: 65px 25px;
+  color: var(--muted);
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+}
+
+.emptyPrompts span {
+  font-size: 38px;
+}
+
+.emptyPrompts h3 {
+  margin: 18px 0 8px;
+  color: var(--text);
+  font-size: 22px;
+}
+
+.emptyPrompts p {
+  margin: 0;
+}
+
+.modalOverlay {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 14, 0.82);
+  backdrop-filter: blur(8px);
+}
+
+.promptModal {
+  width: min(720px, 100%);
+  max-height: 90vh;
+  padding: 30px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: #111827;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.modalHeader h2 {
+  margin-top: 7px;
+  font-size: 28px;
+}
+
+.modalClose {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 27px;
+  line-height: 1;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #0b1120;
+}
+
+.modalClose:hover {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.promptText {
+  padding: 22px;
+  color: #cbd5e1;
+  font-size: 15px;
+  line-height: 1.8;
+  white-space: pre-line;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #080d18;
+}
+
+.modalActions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modalActions button {
+  padding: 12px 19px;
+  font-weight: 800;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.secondaryButton {
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: transparent;
+}
+
+.secondaryButton:hover {
+  border-color: var(--primary);
+}
+
+.copyButton {
+  color: white;
+  border: 0;
+  background: linear-gradient(135deg, var(--primary), #5b8cff);
+}
+
+@media (max-width: 900px) {
+  .promptGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .promptSectionHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .promptGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .promptModal {
+    padding: 22px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .modalActions button {
+    width: 100%;
+  }
+}
