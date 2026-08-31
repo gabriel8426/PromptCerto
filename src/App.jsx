@@ -68,13 +68,24 @@ function App() {
     }))
   }
 
-  function generateCustomizedPrompt(event) {
-    event.preventDefault()
+ 
+ function generateCustomizedPrompt(event) {
+  event.preventDefault()
 
-    const result = `${selectedPrompt.prompt}
+  let providedInformation = ''
 
-Utilize as seguintes informações fornecidas por mim:
-
+  if (selectedCategory === 'Estudos') {
+    providedInformation = `
+- Assunto ou matéria: ${formData.equipment || 'não informado'}
+- Objetivo do estudo: ${formData.objective || 'não informado'}
+- Nível de conhecimento: ${formData.level || 'não informado'}
+- Horas disponíveis por semana: ${formData.days || 'não informado'}
+- Prazo: ${formData.duration || 'não informado'}
+- Formato desejado: ${formData.location || 'não informado'}
+- Dificuldades encontradas: ${formData.limitations || 'nenhuma informada'}
+- Informações adicionais: ${formData.details || 'nenhuma'}`
+  } else {
+    providedInformation = `
 - Objetivo principal: ${formData.objective || 'não informado'}
 - Nível de experiência: ${formData.level || 'não informado'}
 - Dias disponíveis por semana: ${formData.days || 'não informado'}
@@ -82,23 +93,29 @@ Utilize as seguintes informações fornecidas por mim:
 - Local do treino: ${formData.location || 'não informado'}
 - Equipamentos disponíveis: ${formData.equipment || 'não informados'}
 - Limitações ou cuidados: ${formData.limitations || 'nenhum informado'}
-- Informações adicionais: ${formData.details || 'nenhuma'}
+- Informações adicionais: ${formData.details || 'nenhuma'}`
+  }
+
+  const result = `${selectedPrompt.prompt}
+
+Utilize as seguintes informações fornecidas por mim:
+${providedInformation}
 
 Não invente informações que não foram fornecidas. Caso algum dado essencial ainda esteja faltando, faça perguntas antes de apresentar a resposta final.`
 
-    setCustomizedPrompt(result)
-  }
+  setCustomizedPrompt(result)
+}
 
-  async function copyPrompt() {
-    const textToCopy = customizedPrompt || selectedPrompt.prompt
+async function copyPrompt() {
+  const textToCopy = customizedPrompt || selectedPrompt.prompt
 
-    await navigator.clipboard.writeText(textToCopy)
-    setCopied(true)
+  await navigator.clipboard.writeText(textToCopy)
+  setCopied(true)
 
-    setTimeout(() => {
-      setCopied(false)
-    }, 2000)
-  }
+  setTimeout(() => {
+    setCopied(false)
+  }, 2000)
+}
 
   return (
     <div className="app">
@@ -284,92 +301,146 @@ Não invente informações que não foram fornecidas. Caso algum dado essencial 
                   onSubmit={generateCustomizedPrompt}
                 >
                   <div className="formGrid">
-                    <label>
-                      Objetivo principal
-                      <input
-                        name="objective"
-                        value={formData.objective}
-                        onChange={updateField}
-                        placeholder="Ex.: ganhar massa muscular"
-                        required
-                      />
-                    </label>
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Objetivo do estudo'
+      : 'Objetivo principal'}
 
-                    <label>
-                      Nível de experiência
-                      <select
-                        name="level"
-                        value={formData.level}
-                        onChange={updateField}
-                        required
-                      >
-                        <option value="">Selecione</option>
-                        <option value="Iniciante">Iniciante</option>
-                        <option value="Intermediário">Intermediário</option>
-                        <option value="Avançado">Avançado</option>
-                      </select>
-                    </label>
+    <input
+      name="objective"
+      value={formData.objective}
+      onChange={updateField}
+      placeholder={
+        selectedCategory === 'Estudos'
+          ? 'Ex.: preparar-me para uma prova'
+          : 'Ex.: ganhar massa muscular'
+      }
+      required
+    />
+  </label>
 
-                    <label>
-                      Dias por semana
-                      <input
-                        name="days"
-                        type="number"
-                        min="1"
-                        max="7"
-                        value={formData.days}
-                        onChange={updateField}
-                        placeholder="Ex.: 4"
-                        required
-                      />
-                    </label>
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Nível de conhecimento'
+      : 'Nível de experiência'}
 
-                    <label>
-                      Tempo por treino
-                      <input
-                        name="duration"
-                        value={formData.duration}
-                        onChange={updateField}
-                        placeholder="Ex.: 60 minutos"
-                        required
-                      />
-                    </label>
+    <select
+      name="level"
+      value={formData.level}
+      onChange={updateField}
+      required
+    >
+      <option value="">Selecione</option>
+      <option value="Iniciante">Iniciante</option>
+      <option value="Intermediário">Intermediário</option>
+      <option value="Avançado">Avançado</option>
+    </select>
+  </label>
 
-                    <label>
-                      Local do treino
-                      <select
-                        name="location"
-                        value={formData.location}
-                        onChange={updateField}
-                        required
-                      >
-                        <option value="">Selecione</option>
-                        <option value="Academia">Academia</option>
-                        <option value="Casa">Casa</option>
-                        <option value="Ao ar livre">Ao ar livre</option>
-                      </select>
-                    </label>
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Horas disponíveis por semana'
+      : 'Dias por semana'}
 
-                    <label>
-                      Equipamentos disponíveis
-                      <input
-                        name="equipment"
-                        value={formData.equipment}
-                        onChange={updateField}
-                        placeholder="Ex.: academia completa"
-                      />
-                    </label>
-                  </div>
+    <input
+      name="days"
+      type="number"
+      min="1"
+      max={selectedCategory === 'Estudos' ? '168' : '7'}
+      value={formData.days}
+      onChange={updateField}
+      placeholder={
+        selectedCategory === 'Estudos' ? 'Ex.: 10' : 'Ex.: 4'
+      }
+      required
+    />
+  </label>
 
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Prazo'
+      : 'Tempo por treino'}
+
+    <input
+      name="duration"
+      value={formData.duration}
+      onChange={updateField}
+      placeholder={
+        selectedCategory === 'Estudos'
+          ? 'Ex.: prova daqui a 30 dias'
+          : 'Ex.: 60 minutos'
+      }
+      required
+    />
+  </label>
+
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Formato desejado'
+      : 'Local do treino'}
+
+    <select
+      name="location"
+      value={formData.location}
+      onChange={updateField}
+      required
+    >
+      <option value="">Selecione</option>
+
+      {selectedCategory === 'Estudos' ? (
+        <>
+          <option value="Plano de estudos">Plano de estudos</option>
+          <option value="Resumo">Resumo</option>
+          <option value="Explicação">Explicação</option>
+          <option value="Exercícios">Exercícios</option>
+          <option value="Roteiro de apresentação">
+            Roteiro de apresentação
+          </option>
+        </>
+      ) : (
+        <>
+          <option value="Academia">Academia</option>
+          <option value="Casa">Casa</option>
+          <option value="Ao ar livre">Ao ar livre</option>
+        </>
+      )}
+    </select>
+  </label>
+
+  <label>
+    {selectedCategory === 'Estudos'
+      ? 'Assunto ou matéria'
+      : 'Equipamentos disponíveis'}
+
+    <input
+      name="equipment"
+      value={formData.equipment}
+      onChange={updateField}
+      placeholder={
+        selectedCategory === 'Estudos'
+          ? 'Ex.: banco de dados'
+          : 'Ex.: academia completa'
+      }
+      required={selectedCategory === 'Estudos'}
+    />
+  </label>
+</div>
                   <label>
-                    Limitações ou cuidados
-                    <textarea
-                      name="limitations"
-                      value={formData.limitations}
-                      onChange={updateField}
-                      placeholder="Ex.: dor no joelho ou nenhuma limitação"
-                    />
-                  </label>
+  {selectedCategory === 'Estudos'
+    ? 'Dificuldades encontradas'
+    : 'Limitações ou cuidados'}
+
+  <textarea
+    name="limitations"
+    value={formData.limitations}
+    onChange={updateField}
+    placeholder={
+      selectedCategory === 'Estudos'
+        ? 'Ex.: dificuldade para entender cálculos'
+        : 'Ex.: dor no joelho ou nenhuma limitação'
+    }
+  />
+</label>
 
                   <label>
                     Informações adicionais
