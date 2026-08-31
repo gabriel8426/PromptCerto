@@ -72,4 +72,41 @@ export const promptLibrary = {
         'Atue como especialista em apresentações acadêmicas. Crie um roteiro claro e envolvente sobre o tema que informarei. Organize em introdução, desenvolvimento e conclusão, divida o conteúdo por slides, sugira textos curtos para cada slide e prepare falas naturais para o apresentador. Considere o tempo disponível e o nível de conhecimento do público.',
     },
   ],
+    Carreira: [
+    {
+      id: 1,
+      title: 'Criar currículo profissional',
+      description: 'Organize suas informações em um currículo atrativo.',
+      prompt:
+        'Atue como especialista em recrutamento e elaboração de currículos. Crie um currículo profissional, claro e objetivo com base nas informações que fornecerei. Organize em dados pessoais, objetivo, resumo profissional, experiências, formação acadêmica, cursos e habilidades. Adapte o conteúdo à vaga desejada, utilize palavras-chave relevantes e não invente informações.',
+    },
+    {
+      id: 2,
+      title: 'Preparar para entrevista',
+      description: 'Treine respostas para uma entrevista de emprego.',
+      prompt:
+        'Atue como recrutador e prepare-me para uma entrevista de emprego. Considere a vaga desejada, a empresa, minhas experiências, habilidades e dificuldades. Faça perguntas comuns e específicas da área, espere minha resposta e depois apresente uma avaliação com pontos fortes, melhorias e uma resposta alternativa mais profissional.',
+    },
+    {
+      id: 3,
+      title: 'Criar apresentação profissional',
+      description: 'Crie uma resposta para a pergunta “fale sobre você”.',
+      prompt:
+        'Atue como especialista em carreira e crie uma apresentação profissional curta e natural para responder à pergunta “fale sobre você”. Utilize minha formação, experiências, habilidades, principais resultados e objetivo profissional. Adapte a linguagem à vaga desejada, evite exageros e não invente informações.',
+    },
+    {
+      id: 4,
+      title: 'Analisar uma vaga',
+      description: 'Compare seu perfil com os requisitos de uma oportunidade.',
+      prompt:
+        'Atue como recrutador e analise a descrição da vaga que enviarei. Identifique responsabilidades, requisitos obrigatórios, diferenciais e palavras-chave. Depois, compare com meu perfil profissional, mostre meus pontos de compatibilidade, habilidades que preciso desenvolver e como posso adaptar meu currículo para essa oportunidade.',
+    },
+    {
+      id: 5,
+      title: 'Criar plano de carreira',
+      description: 'Organize os próximos passos para alcançar seu objetivo.',
+      prompt:
+        'Atue como orientador profissional e crie um plano de carreira personalizado. Considere minha área atual, formação, experiências, habilidades, objetivo profissional e prazo. Organize o plano em metas de curto, médio e longo prazo, incluindo competências para desenvolver, cursos, projetos práticos e formas de acompanhar minha evolução.',
+    },
+  ],
 }
