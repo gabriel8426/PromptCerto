@@ -10,17 +10,31 @@ const categories = [
   { icon: '🎨', name: 'Imagens', description: 'Fotos, ilustrações e identidade visual' },
 ]
 
+const initialForm = {
+  objective: '',
+  level: '',
+  days: '',
+  duration: '',
+  location: '',
+  equipment: '',
+  limitations: '',
+  details: '',
+}
+
 function App() {
   const [idea, setIdea] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [selectedPrompt, setSelectedPrompt] = useState(null)
   const [copied, setCopied] = useState(false)
+  const [isCustomizing, setIsCustomizing] = useState(false)
+  const [formData, setFormData] = useState(initialForm)
+  const [customizedPrompt, setCustomizedPrompt] = useState('')
 
   const availablePrompts = promptLibrary[selectedCategory] || []
 
   function chooseCategory(categoryName) {
     setSelectedCategory(categoryName)
-    setSelectedPrompt(null)
+    closePrompt()
 
     setTimeout(() => {
       document
@@ -29,8 +43,56 @@ function App() {
     }, 100)
   }
 
+  function openPrompt(item) {
+    setSelectedPrompt(item)
+    setIsCustomizing(false)
+    setCustomizedPrompt('')
+    setFormData(initialForm)
+    setCopied(false)
+  }
+
+  function closePrompt() {
+    setSelectedPrompt(null)
+    setIsCustomizing(false)
+    setCustomizedPrompt('')
+    setFormData(initialForm)
+    setCopied(false)
+  }
+
+  function updateField(event) {
+    const { name, value } = event.target
+
+    setFormData((currentData) => ({
+      ...currentData,
+      [name]: value,
+    }))
+  }
+
+  function generateCustomizedPrompt(event) {
+    event.preventDefault()
+
+    const result = `${selectedPrompt.prompt}
+
+Utilize as seguintes informações fornecidas por mim:
+
+- Objetivo principal: ${formData.objective || 'não informado'}
+- Nível de experiência: ${formData.level || 'não informado'}
+- Dias disponíveis por semana: ${formData.days || 'não informado'}
+- Duração de cada treino: ${formData.duration || 'não informada'}
+- Local do treino: ${formData.location || 'não informado'}
+- Equipamentos disponíveis: ${formData.equipment || 'não informados'}
+- Limitações ou cuidados: ${formData.limitations || 'nenhum informado'}
+- Informações adicionais: ${formData.details || 'nenhuma'}
+
+Não invente informações que não foram fornecidas. Caso algum dado essencial ainda esteja faltando, faça perguntas antes de apresentar a resposta final.`
+
+    setCustomizedPrompt(result)
+  }
+
   async function copyPrompt() {
-    await navigator.clipboard.writeText(selectedPrompt.prompt)
+    const textToCopy = customizedPrompt || selectedPrompt.prompt
+
+    await navigator.clipboard.writeText(textToCopy)
     setCopied(true)
 
     setTimeout(() => {
@@ -136,7 +198,7 @@ function App() {
                 className="closeCategory"
                 onClick={() => {
                   setSelectedCategory('')
-                  setSelectedPrompt(null)
+                  closePrompt()
                 }}
               >
                 Fechar
@@ -154,7 +216,7 @@ function App() {
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
 
-                    <button onClick={() => setSelectedPrompt(item)}>
+                    <button onClick={() => openPrompt(item)}>
                       Ver prompt completo →
                     </button>
                   </article>
@@ -165,8 +227,7 @@ function App() {
                 <span>🚧</span>
                 <h3>Novos prompts em preparação</h3>
                 <p>
-                  Em breve adicionaremos modelos prontos para a categoria{' '}
-                  {selectedCategory}.
+                  Em breve adicionaremos modelos para {selectedCategory}.
                 </p>
               </div>
             )}
@@ -174,40 +235,190 @@ function App() {
         )}
 
         {selectedPrompt && (
-          <div
-            className="modalOverlay"
-            onClick={() => setSelectedPrompt(null)}
-          >
+          <div className="modalOverlay" onClick={closePrompt}>
             <div
               className="promptModal"
               onClick={(event) => event.stopPropagation()}
             >
               <div className="modalHeader">
                 <div>
-                  <span className="eyebrow">PROMPT PRONTO</span>
+                  <span className="eyebrow">
+                    {isCustomizing ? 'PERSONALIZAR PROMPT' : 'PROMPT PRONTO'}
+                  </span>
                   <h2>{selectedPrompt.title}</h2>
                 </div>
 
                 <button
                   className="modalClose"
-                  onClick={() => setSelectedPrompt(null)}
+                  onClick={closePrompt}
                   aria-label="Fechar"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="promptText">{selectedPrompt.prompt}</div>
+              {!isCustomizing && (
+                <>
+                  <div className="promptText">
+                    {selectedPrompt.prompt}
+                  </div>
 
-              <div className="modalActions">
-                <button className="secondaryButton">
-                  Personalizar prompt
-                </button>
+                  <div className="modalActions">
+                    <button
+                      className="secondaryButton"
+                      onClick={() => setIsCustomizing(true)}
+                    >
+                      Personalizar prompt
+                    </button>
 
-                <button className="copyButton" onClick={copyPrompt}>
-                  {copied ? '✓ Prompt copiado' : 'Copiar prompt'}
-                </button>
-              </div>
+                    <button className="copyButton" onClick={copyPrompt}>
+                      {copied ? '✓ Prompt copiado' : 'Copiar prompt'}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {isCustomizing && !customizedPrompt && (
+                <form
+                  className="customForm"
+                  onSubmit={generateCustomizedPrompt}
+                >
+                  <div className="formGrid">
+                    <label>
+                      Objetivo principal
+                      <input
+                        name="objective"
+                        value={formData.objective}
+                        onChange={updateField}
+                        placeholder="Ex.: ganhar massa muscular"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Nível de experiência
+                      <select
+                        name="level"
+                        value={formData.level}
+                        onChange={updateField}
+                        required
+                      >
+                        <option value="">Selecione</option>
+                        <option value="Iniciante">Iniciante</option>
+                        <option value="Intermediário">Intermediário</option>
+                        <option value="Avançado">Avançado</option>
+                      </select>
+                    </label>
+
+                    <label>
+                      Dias por semana
+                      <input
+                        name="days"
+                        type="number"
+                        min="1"
+                        max="7"
+                        value={formData.days}
+                        onChange={updateField}
+                        placeholder="Ex.: 4"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Tempo por treino
+                      <input
+                        name="duration"
+                        value={formData.duration}
+                        onChange={updateField}
+                        placeholder="Ex.: 60 minutos"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Local do treino
+                      <select
+                        name="location"
+                        value={formData.location}
+                        onChange={updateField}
+                        required
+                      >
+                        <option value="">Selecione</option>
+                        <option value="Academia">Academia</option>
+                        <option value="Casa">Casa</option>
+                        <option value="Ao ar livre">Ao ar livre</option>
+                      </select>
+                    </label>
+
+                    <label>
+                      Equipamentos disponíveis
+                      <input
+                        name="equipment"
+                        value={formData.equipment}
+                        onChange={updateField}
+                        placeholder="Ex.: academia completa"
+                      />
+                    </label>
+                  </div>
+
+                  <label>
+                    Limitações ou cuidados
+                    <textarea
+                      name="limitations"
+                      value={formData.limitations}
+                      onChange={updateField}
+                      placeholder="Ex.: dor no joelho ou nenhuma limitação"
+                    />
+                  </label>
+
+                  <label>
+                    Informações adicionais
+                    <textarea
+                      name="details"
+                      value={formData.details}
+                      onChange={updateField}
+                      placeholder="Conte qualquer preferência importante."
+                    />
+                  </label>
+
+                  <div className="modalActions">
+                    <button
+                      type="button"
+                      className="secondaryButton"
+                      onClick={() => setIsCustomizing(false)}
+                    >
+                      Voltar
+                    </button>
+
+                    <button type="submit" className="copyButton">
+                      Criar prompt personalizado
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {isCustomizing && customizedPrompt && (
+                <>
+                  <div className="successMessage">
+                    ✓ Seu prompt personalizado está pronto
+                  </div>
+
+                  <div className="promptText">{customizedPrompt}</div>
+
+                  <div className="modalActions">
+                    <button
+                      className="secondaryButton"
+                      onClick={() => setCustomizedPrompt('')}
+                    >
+                      Editar respostas
+                    </button>
+
+                    <button className="copyButton" onClick={copyPrompt}>
+                      {copied ? '✓ Prompt copiado' : 'Copiar prompt'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
