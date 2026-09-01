@@ -29,6 +29,10 @@ function App() {
   const [isCustomizing, setIsCustomizing] = useState(false)
   const [formData, setFormData] = useState(initialForm)
   const [customizedPrompt, setCustomizedPrompt] = useState('')
+  const [generatedPrompt, setGeneratedPrompt] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generationError, setGenerationError] = useState('')
+  const [generatedCopied, setGeneratedCopied] = useState(false)
 
   const availablePrompts = promptLibrary[selectedCategory] || []
 
@@ -66,6 +70,57 @@ function App() {
       ...currentData,
       [name]: value,
     }))
+  }
+
+  async function generateIdeaPrompt() {
+    const cleanIdea = idea.trim()
+
+    if (cleanIdea.length < 5) {
+      setGenerationError('Explique sua ideia com um pouco mais de detalhes.')
+      setGeneratedPrompt('')
+      return
+    }
+
+    setIsGenerating(true)
+    setGenerationError('')
+    setGeneratedPrompt('')
+
+    try {
+      const response = await fetch(
+        'http://localhost:3001/api/generate-prompt',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ idea: cleanIdea }),
+        },
+      )
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Não foi possível gerar o prompt.')
+      }
+
+      setGeneratedPrompt(data.prompt)
+    } catch (error) {
+      setGenerationError(
+        error.message ||
+          'Não foi possível conectar ao servidor. Verifique se ele está ligado.',
+      )
+    } finally {
+      setIsGenerating(false)
+    }
+  }
+
+  async function copyGeneratedPrompt() {
+    await navigator.clipboard.writeText(generatedPrompt)
+    setGeneratedCopied(true)
+
+    setTimeout(() => {
+      setGeneratedCopied(false)
+    }, 2000)
   }
 
  
@@ -201,11 +256,43 @@ async function copyPrompt() {
 
             <div className="formFooter">
               <span>{idea.length}/500 caracteres</span>
-              <button onClick={() => alert('Em breve, seu prompt será gerado!')}>
-                Gerar meu prompt ✦
+              <button onClick={generateIdeaPrompt} disabled={isGenerating}>
+                {isGenerating ? 'Gerando...' : 'Gerar meu prompt ✦'}
               </button>
             </div>
           </div>
+
+          {generationError && (
+            <p className="helperText" role="alert">
+              ⚠ {generationError}
+            </p>
+          )}
+
+          {generatedPrompt && (
+            <div className="generatorCard">
+              <div className="successMessage">
+                ✓ Seu prompt está pronto
+              </div>
+
+              <div className="promptText">{generatedPrompt}</div>
+
+              <div className="formFooter">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGeneratedPrompt('')
+                    setGeneratedCopied(false)
+                  }}
+                >
+                  Criar outro
+                </button>
+
+                <button type="button" onClick={copyGeneratedPrompt}>
+                  {generatedCopied ? '✓ Prompt copiado' : 'Copiar prompt'}
+                </button>
+              </div>
+            </div>
+          )}
 
           <p className="helperText">
             Não precisa saber escrever prompts. Apenas conte sua ideia.
