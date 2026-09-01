@@ -72,39 +72,69 @@ function App() {
  function generateCustomizedPrompt(event) {
   event.preventDefault()
 
-  let providedInformation = ''
+  let fields = []
 
   if (selectedCategory === 'Estudos') {
-    providedInformation = `
-- Assunto ou matéria: ${formData.equipment || 'não informado'}
-- Objetivo do estudo: ${formData.objective || 'não informado'}
-- Nível de conhecimento: ${formData.level || 'não informado'}
-- Horas disponíveis por semana: ${formData.days || 'não informado'}
-- Prazo: ${formData.duration || 'não informado'}
-- Formato desejado: ${formData.location || 'não informado'}
-- Dificuldades encontradas: ${formData.limitations || 'nenhuma informada'}
-- Informações adicionais: ${formData.details || 'nenhuma'}`
-    } else if (selectedCategory === 'Carreira') {
-    providedInformation = `
-- Objetivo profissional: ${formData.objective || 'não informado'}
-- Nível de experiência: ${formData.level || 'não informado'}
-- Tempo de experiência: ${formData.days || 'não informado'}
-- Vaga ou área desejada: ${formData.duration || 'não informada'}
-- Empresa ou oportunidade: ${formData.location || 'não informada'}
-- Formação acadêmica: ${formData.equipment || 'não informada'}
-- Experiências profissionais: ${formData.limitations || 'nenhuma informada'}
-- Habilidades e informações adicionais: ${formData.details || 'nenhuma'}`
+    fields = [
+      ['Assunto ou matéria', formData.equipment],
+      ['Objetivo do estudo', formData.objective],
+      ['Nível de conhecimento', formData.level],
+      ['Horas disponíveis por semana', formData.days],
+      ['Prazo', formData.duration],
+      ['Formato desejado', formData.location],
+      ['Dificuldades encontradas', formData.limitations],
+      ['Informações adicionais', formData.details],
+    ]
+  } else if (selectedCategory === 'Carreira') {
+    fields = [
+      ['Objetivo profissional', formData.objective],
+      ['Nível de experiência', formData.level],
+      ['Tempo de experiência', formData.days],
+      ['Vaga ou área desejada', formData.duration],
+      ['Empresa ou oportunidade', formData.location],
+      ['Formação acadêmica', formData.equipment],
+      ['Experiências profissionais', formData.limitations],
+      ['Habilidades e informações adicionais', formData.details],
+    ]
+  } else if (selectedCategory === 'Programação') {
+    fields = [
+      ['Objetivo do código ou projeto', formData.objective],
+      ['Nível de conhecimento', formData.level],
+      ['Tempo disponível', formData.days],
+      ['Linguagem ou tecnologia', formData.duration],
+      ['Tipo de ajuda desejada', formData.location],
+      ['Ferramentas ou ambiente', formData.equipment],
+      ['Código, erro ou requisitos', formData.limitations],
+      ['Resultado esperado e informações adicionais', formData.details],
+    ]
+  } else if (selectedCategory === 'Imagens') {
+    fields = [
+      ['O que deseja criar', formData.objective],
+      ['Nível de realismo', formData.level],
+      ['Formato ou proporção', formData.days],
+      ['Estilo visual', formData.duration],
+      ['Ferramenta de IA', formData.location],
+      ['Cores e iluminação', formData.equipment],
+      ['Elementos e detalhes da imagem', formData.limitations],
+      ['O que evitar e informações adicionais', formData.details],
+    ]
   } else {
-    providedInformation = `
-- Objetivo principal: ${formData.objective || 'não informado'}
-- Nível de experiência: ${formData.level || 'não informado'}
-- Dias disponíveis por semana: ${formData.days || 'não informado'}
-- Duração de cada treino: ${formData.duration || 'não informada'}
-- Local do treino: ${formData.location || 'não informado'}
-- Equipamentos disponíveis: ${formData.equipment || 'não informados'}
-- Limitações ou cuidados: ${formData.limitations || 'nenhum informado'}
-- Informações adicionais: ${formData.details || 'nenhuma'}`
+    fields = [
+      ['Objetivo principal', formData.objective],
+      ['Nível de experiência', formData.level],
+      ['Dias disponíveis por semana', formData.days],
+      ['Duração de cada treino', formData.duration],
+      ['Local do treino', formData.location],
+      ['Equipamentos disponíveis', formData.equipment],
+      ['Limitações ou cuidados', formData.limitations],
+      ['Informações adicionais', formData.details],
+    ]
   }
+
+  const providedInformation = fields
+    .filter(([, value]) => value && value.trim())
+    .map(([label, value]) => `- ${label}: ${value.trim()}`)
+    .join('\n')
 
   const result = `${selectedPrompt.prompt}
 
@@ -316,7 +346,11 @@ async function copyPrompt() {
                         ? 'Objetivo do estudo'
                         : selectedCategory === 'Carreira'
                           ? 'Objetivo profissional'
-                          : 'Objetivo principal'}
+                          : selectedCategory === 'Programação'
+                            ? 'Objetivo do código ou projeto'
+                            : selectedCategory === 'Imagens'
+                              ? 'O que deseja criar'
+                              : 'Objetivo principal'}
 
                       <input
                         name="objective"
@@ -327,16 +361,22 @@ async function copyPrompt() {
                             ? 'Ex.: preparar-me para uma prova'
                             : selectedCategory === 'Carreira'
                               ? 'Ex.: conseguir uma vaga como desenvolvedor'
-                              : 'Ex.: ganhar massa muscular'
+                              : selectedCategory === 'Programação'
+                                ? 'Ex.: criar uma API para cadastro de usuários'
+                                : selectedCategory === 'Imagens'
+                                  ? 'Ex.: uma foto profissional para o LinkedIn'
+                                  : 'Ex.: ganhar massa muscular'
                         }
                         required
                       />
                     </label>
 
                     <label>
-                      {selectedCategory === 'Estudos'
-                        ? 'Nível de conhecimento'
-                        : 'Nível de experiência'}
+                      {selectedCategory === 'Imagens'
+                        ? 'Nível de realismo'
+                        : selectedCategory === 'Estudos' || selectedCategory === 'Programação'
+                          ? 'Nível de conhecimento'
+                          : 'Nível de experiência'}
 
                       <select
                         name="level"
@@ -350,9 +390,19 @@ async function copyPrompt() {
                             Sem experiência profissional
                           </option>
                         )}
-                        <option value="Iniciante">Iniciante</option>
-                        <option value="Intermediário">Intermediário</option>
-                        <option value="Avançado">Avançado</option>
+                        {selectedCategory === 'Imagens' ? (
+                          <>
+                            <option value="Fotográfico e realista">Fotográfico e realista</option>
+                            <option value="Semirrealista">Semirrealista</option>
+                            <option value="Ilustração estilizada">Ilustração estilizada</option>
+                          </>
+                        ) : (
+                          <>
+                            <option value="Iniciante">Iniciante</option>
+                            <option value="Intermediário">Intermediário</option>
+                            <option value="Avançado">Avançado</option>
+                          </>
+                        )}
                       </select>
                     </label>
 
@@ -361,7 +411,11 @@ async function copyPrompt() {
                         ? 'Horas disponíveis por semana'
                         : selectedCategory === 'Carreira'
                           ? 'Tempo de experiência'
-                          : 'Dias por semana'}
+                          : selectedCategory === 'Programação'
+                            ? 'Tempo disponível'
+                            : selectedCategory === 'Imagens'
+                              ? 'Formato ou proporção'
+                              : 'Dias por semana'}
 
                       <input
                         name="days"
@@ -372,7 +426,11 @@ async function copyPrompt() {
                             ? 'Ex.: 10 horas'
                             : selectedCategory === 'Carreira'
                               ? 'Ex.: 1 ano ou ainda não possuo'
-                              : 'Ex.: 4 dias'
+                              : selectedCategory === 'Programação'
+                                ? 'Ex.: 2 horas por dia'
+                                : selectedCategory === 'Imagens'
+                                  ? 'Ex.: quadrada 1:1 ou vertical 9:16'
+                                  : 'Ex.: 4 dias'
                         }
                         required
                       />
@@ -383,7 +441,11 @@ async function copyPrompt() {
                         ? 'Prazo'
                         : selectedCategory === 'Carreira'
                           ? 'Vaga ou área desejada'
-                          : 'Tempo por treino'}
+                          : selectedCategory === 'Programação'
+                            ? 'Linguagem ou tecnologia'
+                            : selectedCategory === 'Imagens'
+                              ? 'Estilo visual'
+                              : 'Tempo por treino'}
 
                       <input
                         name="duration"
@@ -394,7 +456,11 @@ async function copyPrompt() {
                             ? 'Ex.: prova daqui a 30 dias'
                             : selectedCategory === 'Carreira'
                               ? 'Ex.: desenvolvedor front-end'
-                              : 'Ex.: 60 minutos'
+                              : selectedCategory === 'Programação'
+                                ? 'Ex.: JavaScript, React e Node.js'
+                                : selectedCategory === 'Imagens'
+                                  ? 'Ex.: moderno, minimalista e profissional'
+                                  : 'Ex.: 60 minutos'
                         }
                         required
                       />
@@ -405,7 +471,11 @@ async function copyPrompt() {
                         ? 'Formato desejado'
                         : selectedCategory === 'Carreira'
                           ? 'Empresa ou oportunidade'
-                          : 'Local do treino'}
+                          : selectedCategory === 'Programação'
+                            ? 'Tipo de ajuda'
+                            : selectedCategory === 'Imagens'
+                              ? 'Ferramenta de IA'
+                              : 'Local do treino'}
 
                       {selectedCategory === 'Carreira' ? (
                         <input
@@ -432,6 +502,22 @@ async function copyPrompt() {
                                 Roteiro de apresentação
                               </option>
                             </>
+                          ) : selectedCategory === 'Programação' ? (
+                            <>
+                              <option value="Criar projeto">Criar projeto</option>
+                              <option value="Corrigir erro">Corrigir erro</option>
+                              <option value="Explicar código">Explicar código</option>
+                              <option value="Melhorar código">Melhorar código</option>
+                              <option value="Plano de aprendizado">Plano de aprendizado</option>
+                            </>
+                          ) : selectedCategory === 'Imagens' ? (
+                            <>
+                              <option value="ChatGPT Images">ChatGPT Images</option>
+                              <option value="Midjourney">Midjourney</option>
+                              <option value="Gemini">Gemini</option>
+                              <option value="Stable Diffusion">Stable Diffusion</option>
+                              <option value="Qualquer ferramenta">Qualquer ferramenta</option>
+                            </>
                           ) : (
                             <>
                               <option value="Academia">Academia</option>
@@ -448,7 +534,11 @@ async function copyPrompt() {
                         ? 'Assunto ou matéria'
                         : selectedCategory === 'Carreira'
                           ? 'Formação acadêmica'
-                          : 'Equipamentos disponíveis'}
+                          : selectedCategory === 'Programação'
+                            ? 'Ferramentas ou ambiente'
+                            : selectedCategory === 'Imagens'
+                              ? 'Cores e iluminação'
+                              : 'Equipamentos disponíveis'}
 
                       <input
                         name="equipment"
@@ -459,7 +549,11 @@ async function copyPrompt() {
                             ? 'Ex.: banco de dados'
                             : selectedCategory === 'Carreira'
                               ? 'Ex.: cursando Análise e Desenvolvimento de Sistemas'
-                              : 'Ex.: academia completa'
+                              : selectedCategory === 'Programação'
+                                ? 'Ex.: VS Code, Windows 10 e PostgreSQL'
+                                : selectedCategory === 'Imagens'
+                                  ? 'Ex.: tons azulados e iluminação suave'
+                                  : 'Ex.: academia completa'
                         }
                         required={selectedCategory !== 'Academia'}
                       />
@@ -471,7 +565,11 @@ async function copyPrompt() {
                       ? 'Dificuldades encontradas'
                       : selectedCategory === 'Carreira'
                         ? 'Experiências profissionais'
-                        : 'Limitações ou cuidados'}
+                        : selectedCategory === 'Programação'
+                          ? 'Código, erro ou requisitos'
+                          : selectedCategory === 'Imagens'
+                            ? 'Elementos e detalhes da imagem'
+                            : 'Limitações ou cuidados'}
 
                     <textarea
                       name="limitations"
@@ -482,7 +580,11 @@ async function copyPrompt() {
                           ? 'Ex.: dificuldade para entender cálculos'
                           : selectedCategory === 'Carreira'
                             ? 'Descreva seus empregos, atividades, projetos ou trabalhos anteriores.'
-                            : 'Ex.: dor no joelho ou nenhuma limitação'
+                            : selectedCategory === 'Programação'
+                              ? 'Cole o código, a mensagem de erro ou descreva os requisitos.'
+                              : selectedCategory === 'Imagens'
+                                ? 'Descreva personagens, objetos, ambiente, roupas, pose e enquadramento.'
+                                : 'Ex.: dor no joelho ou nenhuma limitação'
                       }
                     />
                   </label>
@@ -490,7 +592,11 @@ async function copyPrompt() {
                   <label>
                     {selectedCategory === 'Carreira'
                       ? 'Habilidades e informações adicionais'
-                      : 'Informações adicionais'}
+                      : selectedCategory === 'Programação'
+                        ? 'Resultado esperado e informações adicionais'
+                        : selectedCategory === 'Imagens'
+                          ? 'O que evitar e informações adicionais'
+                          : 'Informações adicionais'}
 
                     <textarea
                       name="details"
@@ -499,7 +605,11 @@ async function copyPrompt() {
                       placeholder={
                         selectedCategory === 'Carreira'
                           ? 'Ex.: conhecimentos técnicos, cursos, habilidades e pontos fortes.'
-                          : 'Conte qualquer preferência importante.'
+                          : selectedCategory === 'Programação'
+                            ? 'Descreva como o resultado deve funcionar e qualquer preferência importante.'
+                            : selectedCategory === 'Imagens'
+                              ? 'Ex.: evitar textos, marcas d’água, mãos deformadas e fundo poluído.'
+                              : 'Conte qualquer preferência importante.'
                       }
                     />
                   </label>
