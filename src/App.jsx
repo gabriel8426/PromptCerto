@@ -230,7 +230,18 @@ async function copyPrompt() {
           <a href="#how-it-works">Como funciona</a>
         </nav>
 
-        <button className="loginButton">Entrar</button>
+        <button
+          className="loginButton"
+          onClick={() =>
+            window.open(
+              'https://github.com/gabriel8426/PromptCerto',
+              '_blank',
+              'noopener,noreferrer',
+            )
+          }
+        >
+          Ver GitHub
+        </button>
       </header>
 
       <main>
@@ -746,6 +757,45 @@ async function copyPrompt() {
             </div>
           </div>
         )}
+        <section className="categories" id="how-it-works">
+          <div className="sectionHeading">
+            <div>
+              <span className="eyebrow">COMO FUNCIONA</span>
+              <h2>Seu prompt em três etapas</h2>
+            </div>
+
+            <p>
+              Você descreve o que precisa e o PromptCerto organiza as
+              informações em um modelo claro e pronto para utilizar.
+            </p>
+          </div>
+
+          <div className="categoryGrid">
+            <article className="categoryCard">
+              <span className="categoryIcon">1</span>
+              <strong>Descreva sua ideia</strong>
+              <small>
+                Escreva com suas próprias palavras o resultado que deseja.
+              </small>
+            </article>
+
+            <article className="categoryCard">
+              <span className="categoryIcon">2</span>
+              <strong>Escolha ou personalize</strong>
+              <small>
+                Use o gerador principal ou selecione um modelo da biblioteca.
+              </small>
+            </article>
+
+            <article className="categoryCard">
+              <span className="categoryIcon">3</span>
+              <strong>Copie o prompt</strong>
+              <small>
+                Copie o resultado e utilize na ferramenta de IA que preferir.
+              </small>
+            </article>
+          </div>
+        </section>
       </main>
 
       <footer>
