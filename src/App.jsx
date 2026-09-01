@@ -84,6 +84,16 @@ function App() {
 - Formato desejado: ${formData.location || 'não informado'}
 - Dificuldades encontradas: ${formData.limitations || 'nenhuma informada'}
 - Informações adicionais: ${formData.details || 'nenhuma'}`
+    } else if (selectedCategory === 'Carreira') {
+    providedInformation = `
+- Objetivo profissional: ${formData.objective || 'não informado'}
+- Nível de experiência: ${formData.level || 'não informado'}
+- Tempo de experiência: ${formData.days || 'não informado'}
+- Vaga ou área desejada: ${formData.duration || 'não informada'}
+- Empresa ou oportunidade: ${formData.location || 'não informada'}
+- Formação acadêmica: ${formData.equipment || 'não informada'}
+- Experiências profissionais: ${formData.limitations || 'nenhuma informada'}
+- Habilidades e informações adicionais: ${formData.details || 'nenhuma'}`
   } else {
     providedInformation = `
 - Objetivo principal: ${formData.objective || 'não informado'}
@@ -301,154 +311,196 @@ async function copyPrompt() {
                   onSubmit={generateCustomizedPrompt}
                 >
                   <div className="formGrid">
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Objetivo do estudo'
-      : 'Objetivo principal'}
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Objetivo do estudo'
+                        : selectedCategory === 'Carreira'
+                          ? 'Objetivo profissional'
+                          : 'Objetivo principal'}
 
-    <input
-      name="objective"
-      value={formData.objective}
-      onChange={updateField}
-      placeholder={
-        selectedCategory === 'Estudos'
-          ? 'Ex.: preparar-me para uma prova'
-          : 'Ex.: ganhar massa muscular'
-      }
-      required
-    />
-  </label>
+                      <input
+                        name="objective"
+                        value={formData.objective}
+                        onChange={updateField}
+                        placeholder={
+                          selectedCategory === 'Estudos'
+                            ? 'Ex.: preparar-me para uma prova'
+                            : selectedCategory === 'Carreira'
+                              ? 'Ex.: conseguir uma vaga como desenvolvedor'
+                              : 'Ex.: ganhar massa muscular'
+                        }
+                        required
+                      />
+                    </label>
 
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Nível de conhecimento'
-      : 'Nível de experiência'}
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Nível de conhecimento'
+                        : 'Nível de experiência'}
 
-    <select
-      name="level"
-      value={formData.level}
-      onChange={updateField}
-      required
-    >
-      <option value="">Selecione</option>
-      <option value="Iniciante">Iniciante</option>
-      <option value="Intermediário">Intermediário</option>
-      <option value="Avançado">Avançado</option>
-    </select>
-  </label>
+                      <select
+                        name="level"
+                        value={formData.level}
+                        onChange={updateField}
+                        required
+                      >
+                        <option value="">Selecione</option>
+                        {selectedCategory === 'Carreira' && (
+                          <option value="Sem experiência profissional">
+                            Sem experiência profissional
+                          </option>
+                        )}
+                        <option value="Iniciante">Iniciante</option>
+                        <option value="Intermediário">Intermediário</option>
+                        <option value="Avançado">Avançado</option>
+                      </select>
+                    </label>
 
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Horas disponíveis por semana'
-      : 'Dias por semana'}
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Horas disponíveis por semana'
+                        : selectedCategory === 'Carreira'
+                          ? 'Tempo de experiência'
+                          : 'Dias por semana'}
 
-    <input
-      name="days"
-      type="number"
-      min="1"
-      max={selectedCategory === 'Estudos' ? '168' : '7'}
-      value={formData.days}
-      onChange={updateField}
-      placeholder={
-        selectedCategory === 'Estudos' ? 'Ex.: 10' : 'Ex.: 4'
-      }
-      required
-    />
-  </label>
+                      <input
+                        name="days"
+                        value={formData.days}
+                        onChange={updateField}
+                        placeholder={
+                          selectedCategory === 'Estudos'
+                            ? 'Ex.: 10 horas'
+                            : selectedCategory === 'Carreira'
+                              ? 'Ex.: 1 ano ou ainda não possuo'
+                              : 'Ex.: 4 dias'
+                        }
+                        required
+                      />
+                    </label>
 
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Prazo'
-      : 'Tempo por treino'}
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Prazo'
+                        : selectedCategory === 'Carreira'
+                          ? 'Vaga ou área desejada'
+                          : 'Tempo por treino'}
 
-    <input
-      name="duration"
-      value={formData.duration}
-      onChange={updateField}
-      placeholder={
-        selectedCategory === 'Estudos'
-          ? 'Ex.: prova daqui a 30 dias'
-          : 'Ex.: 60 minutos'
-      }
-      required
-    />
-  </label>
+                      <input
+                        name="duration"
+                        value={formData.duration}
+                        onChange={updateField}
+                        placeholder={
+                          selectedCategory === 'Estudos'
+                            ? 'Ex.: prova daqui a 30 dias'
+                            : selectedCategory === 'Carreira'
+                              ? 'Ex.: desenvolvedor front-end'
+                              : 'Ex.: 60 minutos'
+                        }
+                        required
+                      />
+                    </label>
 
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Formato desejado'
-      : 'Local do treino'}
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Formato desejado'
+                        : selectedCategory === 'Carreira'
+                          ? 'Empresa ou oportunidade'
+                          : 'Local do treino'}
 
-    <select
-      name="location"
-      value={formData.location}
-      onChange={updateField}
-      required
-    >
-      <option value="">Selecione</option>
+                      {selectedCategory === 'Carreira' ? (
+                        <input
+                          name="location"
+                          value={formData.location}
+                          onChange={updateField}
+                          placeholder="Ex.: estágio em uma empresa de tecnologia"
+                        />
+                      ) : (
+                        <select
+                          name="location"
+                          value={formData.location}
+                          onChange={updateField}
+                          required
+                        >
+                          <option value="">Selecione</option>
+                          {selectedCategory === 'Estudos' ? (
+                            <>
+                              <option value="Plano de estudos">Plano de estudos</option>
+                              <option value="Resumo">Resumo</option>
+                              <option value="Explicação">Explicação</option>
+                              <option value="Exercícios">Exercícios</option>
+                              <option value="Roteiro de apresentação">
+                                Roteiro de apresentação
+                              </option>
+                            </>
+                          ) : (
+                            <>
+                              <option value="Academia">Academia</option>
+                              <option value="Casa">Casa</option>
+                              <option value="Ao ar livre">Ao ar livre</option>
+                            </>
+                          )}
+                        </select>
+                      )}
+                    </label>
 
-      {selectedCategory === 'Estudos' ? (
-        <>
-          <option value="Plano de estudos">Plano de estudos</option>
-          <option value="Resumo">Resumo</option>
-          <option value="Explicação">Explicação</option>
-          <option value="Exercícios">Exercícios</option>
-          <option value="Roteiro de apresentação">
-            Roteiro de apresentação
-          </option>
-        </>
-      ) : (
-        <>
-          <option value="Academia">Academia</option>
-          <option value="Casa">Casa</option>
-          <option value="Ao ar livre">Ao ar livre</option>
-        </>
-      )}
-    </select>
-  </label>
+                    <label>
+                      {selectedCategory === 'Estudos'
+                        ? 'Assunto ou matéria'
+                        : selectedCategory === 'Carreira'
+                          ? 'Formação acadêmica'
+                          : 'Equipamentos disponíveis'}
 
-  <label>
-    {selectedCategory === 'Estudos'
-      ? 'Assunto ou matéria'
-      : 'Equipamentos disponíveis'}
+                      <input
+                        name="equipment"
+                        value={formData.equipment}
+                        onChange={updateField}
+                        placeholder={
+                          selectedCategory === 'Estudos'
+                            ? 'Ex.: banco de dados'
+                            : selectedCategory === 'Carreira'
+                              ? 'Ex.: cursando Análise e Desenvolvimento de Sistemas'
+                              : 'Ex.: academia completa'
+                        }
+                        required={selectedCategory !== 'Academia'}
+                      />
+                    </label>
+                  </div>
 
-    <input
-      name="equipment"
-      value={formData.equipment}
-      onChange={updateField}
-      placeholder={
-        selectedCategory === 'Estudos'
-          ? 'Ex.: banco de dados'
-          : 'Ex.: academia completa'
-      }
-      required={selectedCategory === 'Estudos'}
-    />
-  </label>
-</div>
                   <label>
-  {selectedCategory === 'Estudos'
-    ? 'Dificuldades encontradas'
-    : 'Limitações ou cuidados'}
+                    {selectedCategory === 'Estudos'
+                      ? 'Dificuldades encontradas'
+                      : selectedCategory === 'Carreira'
+                        ? 'Experiências profissionais'
+                        : 'Limitações ou cuidados'}
 
-  <textarea
-    name="limitations"
-    value={formData.limitations}
-    onChange={updateField}
-    placeholder={
-      selectedCategory === 'Estudos'
-        ? 'Ex.: dificuldade para entender cálculos'
-        : 'Ex.: dor no joelho ou nenhuma limitação'
-    }
-  />
-</label>
+                    <textarea
+                      name="limitations"
+                      value={formData.limitations}
+                      onChange={updateField}
+                      placeholder={
+                        selectedCategory === 'Estudos'
+                          ? 'Ex.: dificuldade para entender cálculos'
+                          : selectedCategory === 'Carreira'
+                            ? 'Descreva seus empregos, atividades, projetos ou trabalhos anteriores.'
+                            : 'Ex.: dor no joelho ou nenhuma limitação'
+                      }
+                    />
+                  </label>
 
                   <label>
-                    Informações adicionais
+                    {selectedCategory === 'Carreira'
+                      ? 'Habilidades e informações adicionais'
+                      : 'Informações adicionais'}
+
                     <textarea
                       name="details"
                       value={formData.details}
                       onChange={updateField}
-                      placeholder="Conte qualquer preferência importante."
+                      placeholder={
+                        selectedCategory === 'Carreira'
+                          ? 'Ex.: conhecimentos técnicos, cursos, habilidades e pontos fortes.'
+                          : 'Conte qualquer preferência importante.'
+                      }
                     />
                   </label>
 
