@@ -2,18 +2,18 @@ import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
 import OpenAI from 'openai'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
 dotenv.config()
 
 const app = express()
-const port = 3001
+const port = process.env.PORT || 3001
+const currentFile = fileURLToPath(import.meta.url)
+const currentDirectory = path.dirname(currentFile)
+const distDirectory = path.join(currentDirectory, '..', 'dist')
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173',
-  }),
-)
-
+app.use(cors())
 app.use(express.json({ limit: '20kb' }))
 
 app.get('/api/health', (request, response) => {
@@ -110,10 +110,16 @@ Regras:
   }
 })
 
+app.use(express.static(distDirectory))
+
+app.get('/', (request, response) => {
+  response.sendFile(path.join(distDirectory, 'index.html'))
+})
+
 app.listen(port, () => {
   const mode =
     process.env.USE_MOCK_AI === 'true' ? 'simulado' : 'OpenAI'
 
-  console.log(`Servidor disponível em http://localhost:${port}`)
+  console.log(`Servidor disponível na porta ${port}`)
   console.log(`Modo atual: ${mode}`)
 })
